@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import noteService from './services/notes'
 
 const Person = ({ person }) => {
   return <li>{person.name} {person.number}</li>
@@ -25,10 +26,15 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault();
-    if (!persons.some(person => person.name === newName)) // Only add if not already in list
-      setPersons(persons.concat({ name: newName, number: newNumber }))
-    else
-      alert(`${newName} is already added to phonebook`)
+    const newPerson = { name: newName, number: newNumber }
+    console.log(`Adding ${newPerson.name} with number ${newPerson.number}`)
+    noteService.create(newPerson)
+      .then(response => {
+        setPersons(persons.concat(response.data))
+      })
+      .catch(error => {
+        console.error('Error adding person:', error)
+      })
   }
 
   useEffect(() => {
