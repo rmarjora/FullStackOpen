@@ -1,16 +1,6 @@
 import { useState } from 'react'
 import axios from 'axios'
-
-const Result = ({ countries }) => {
-  if(countries === null || countries === undefined) return null
-  if(countries.length > 10) {
-    return <div>Too many matches, specify another filter</div>
-  } else {
-    return <div>
-      {countries.map(country => <div key={country}>{country}</div>)}
-    </div>
-  }
-}
+import Result from './components/Result'
 
 function App() {
   const [filter, setFilter] = useState('')
@@ -20,10 +10,9 @@ function App() {
     setFilter(event.target.value)
     axios.get('https://studies.cs.helsinki.fi/restcountries/api/all')
       .then(response => {
-        console.log('Countries fetched:', response.data)
-        const countries = response.data.map(country => country.name.common)
-        const filteredCountries = countries.filter(country => 
-          country.toLowerCase().includes(event.target.value.toLowerCase())
+        // console.log('Countries fetched:', response.data)
+        const filteredCountries = response.data.filter(country => 
+          country.name.common.toLowerCase().includes(event.target.value.toLowerCase())
         )
         setCountries(filteredCountries)
       })
