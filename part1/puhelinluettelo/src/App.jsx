@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import noteService from './services/notes'
 
-const Person = ({ person }) => {
-  return <li>{person.name} {person.number}</li>
+const Person = ({ person, deleteSelf }) => {
+  return (
+  <li>
+    {person.name} {person.number}
+    <button onClick={deleteSelf}>delete</button>
+  </li>
+  )
 }
 
 const Numbers = (props) => {
@@ -30,7 +34,7 @@ const App = () => {
     console.log(`Adding ${newPerson.name} with number ${newPerson.number}`)
     noteService.create(newPerson)
       .then(response => {
-        setPersons(persons.concat(response.data))
+        setPersons(persons.concat(response))
       })
       .catch(error => {
         console.error('Error adding person:', error)
@@ -39,10 +43,10 @@ const App = () => {
 
   useEffect(() => {
     console.log('effect')
-    axios.get('http://localhost:3001/persons')
+    noteService.getAll()
       .then(response => {
         console.log('promise fulfilled')
-        setPersons(response.data)
+        setPersons(response)
       })
   }, [])
 
@@ -55,6 +59,15 @@ const App = () => {
     setNewNumber(event.target.value)
   }
 
+  const deletePerson = (id) => {
+    console.log(`Deleting person with id ${id}`)
+    noteService.deleteItem(id)
+      .then(response => {
+        console.log('Person deleted:', response)
+        setPersons(persons.filter(person => person.id !== id))
+      })
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -63,7 +76,12 @@ const App = () => {
         <div>number: <input onChange={handleNumberChange} /></div>
         <div><button type="submit" onClick={addPerson}>add</button></div>
       </form>
-      <Numbers persons={persons}/>
+      <h2>Numbers</h2>
+      <ul>
+        {persons.map(person =>
+          <Person key={person.id} person={person} deleteSelf={() => deletePerson(person.id)} />
+        )}
+      </ul>
     </div>
   )
 
