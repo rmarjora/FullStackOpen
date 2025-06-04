@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import noteService from './services/notes'
+import Notification from './components/Notification'
 
 const Person = ({ person, deleteSelf }) => {
   return (
@@ -28,6 +29,14 @@ const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
+  const [notification, setNotification] = useState("Hello, this is a notification!")
+
+  const displayNotification = (message, duration) => {
+    setNotification(message);
+    setTimeout(() => {
+      setNotification(null);
+    }, duration);
+  }
 
   const addPerson = (event) => {
     event.preventDefault();
@@ -40,11 +49,13 @@ const App = () => {
       noteService.update(id, newPerson)
         .then(response => {
           setPersons(persons.map(person => person.id !== id ? person : response))
+          displayNotification(`Changed ${newPerson.name}'s number`, 5000)
         })
     } else {
       noteService.create(newPerson)
         .then(response => {
           setPersons(persons.concat(response))
+          displayNotification(`Added ${newPerson.name}`, 5000)
         })
         .catch(error => {
           console.error('Error adding person:', error)
@@ -95,6 +106,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notification} />
       <input type="text" onChange={handleFilterChange}/>
       <h2>add a new</h2>
       <form>
