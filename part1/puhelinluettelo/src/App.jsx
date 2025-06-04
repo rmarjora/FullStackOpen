@@ -3,10 +3,10 @@ import noteService from './services/notes'
 
 const Person = ({ person, deleteSelf }) => {
   return (
-  <li>
-    {person.name} {person.number}
-    <button onClick={deleteSelf}>delete</button>
-  </li>
+    <li>
+      {person.name} {person.number}
+      <button onClick={deleteSelf}>delete</button>
+    </li>
   )
 }
 
@@ -32,13 +32,23 @@ const App = () => {
     event.preventDefault();
     const newPerson = { name: newName, number: newNumber }
     console.log(`Adding ${newPerson.name} with number ${newPerson.number}`)
-    noteService.create(newPerson)
-      .then(response => {
-        setPersons(persons.concat(response))
-      })
-      .catch(error => {
-        console.error('Error adding person:', error)
-      })
+    if (persons.some(person => person.name === newPerson.name)) {
+      // name already exists, update entry
+      console.log(`Person with name ${newPerson.name} already exists, updating number`)
+      const id = persons.find(person => person.name === newPerson.name).id
+      noteService.update(id, newPerson)
+        .then(response => {
+          setPersons(persons.map(person => person.id !== id ? person : response))
+        })
+    } else {
+      noteService.create(newPerson)
+        .then(response => {
+          setPersons(persons.concat(response))
+        })
+        .catch(error => {
+          console.error('Error adding person:', error)
+        })
+    }
   }
 
   useEffect(() => {
@@ -61,11 +71,16 @@ const App = () => {
 
   const deletePerson = (id) => {
     console.log(`Deleting person with id ${id}`)
-    noteService.deleteItem(id)
+    const result = confirm(`Delete ${persons.find(person => person.id === id).name}?`)
+
+    // Delete person if confirmed
+    if (result) {
+      noteService.deleteItem(id)
       .then(response => {
         console.log('Person deleted:', response)
         setPersons(persons.filter(person => person.id !== id))
       })
+    }
   }
 
   return (
