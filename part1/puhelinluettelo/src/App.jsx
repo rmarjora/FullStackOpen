@@ -29,12 +29,12 @@ const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
-  const [notification, setNotification] = useState("Hello, this is a notification!")
+  const [notification, setNotification] = useState({message: null, color: 'green'})
 
-  const displayNotification = (message, duration) => {
-    setNotification(message);
+  const displayNotification = (message, color = 'green', duration=5000) => {
+    setNotification({message, color});
     setTimeout(() => {
-      setNotification(null);
+      setNotification({...notification , message: null});
     }, duration);
   }
 
@@ -49,13 +49,17 @@ const App = () => {
       noteService.update(id, newPerson)
         .then(response => {
           setPersons(persons.map(person => person.id !== id ? person : response))
-          displayNotification(`Changed ${newPerson.name}'s number`, 5000)
+          displayNotification(`Changed ${newPerson.name}'s number`)
+        })
+        .catch(error => {
+          console.log('Error updating person:', error)
+          displayNotification(`Information of ${newPerson.name} has already been removed from the server`, 'red')
         })
     } else {
       noteService.create(newPerson)
         .then(response => {
           setPersons(persons.concat(response))
-          displayNotification(`Added ${newPerson.name}`, 5000)
+          displayNotification(`Added ${newPerson.name}`)
         })
         .catch(error => {
           console.error('Error adding person:', error)
@@ -106,8 +110,10 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={notification} />
-      <input type="text" onChange={handleFilterChange}/>
+      <Notification notification={notification} />
+      <div>filter shown with
+        <input type="text" onChange={handleFilterChange}/>
+      </div>
       <h2>add a new</h2>
       <form>
         <div>name: <input onChange={handleNameChange} /></div>
