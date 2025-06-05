@@ -28,8 +28,8 @@ const App = () => {
 
     noteService
       .update(id, changedNote)
-      .then(returnedNote => {
-        setNotes(notes.map(note => note.id === id ? returnedNote : note))
+      .then(response => {
+        setNotes(notes.map(note => note.id === id ? changedNote : note))
       })
       .catch(error => {
         setErrorMessage(

@@ -1,6 +1,30 @@
 const express = require('express')
+const cors = require('cors')
 const app = express()
+app.use(cors())
 app.use(express.json())
+const headersLogger = (request, response, next) => {
+  console.log('Headers:', request.headers)
+  next()
+}
+
+// app.use(headersLogger)
+const requestLogger = (request, response, next) => {
+  console.log('Method:', request.method)
+  console.log('Path:  ', request.path)
+  console.log('Body:  ', request.body)
+  console.log('---')
+  next()
+}
+
+
+// app.use(requestLogger)
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+// app.use(unknownEndpoint)
 
 let notes = [
   {
@@ -73,7 +97,35 @@ app.post('/api/notes', (request, response) => {
   response.json(note)
 })
 
-const PORT = 3001
+app.put('/api/notes/:id', (request, response) => {
+console.log(`Update request received for note with id: ${request.params.id}`)
+  const id = request.params.id
+  const body = request.body
+
+  if(notes.find(note => note.id === id) === undefined) {
+    return response.status(404).json({ 
+      error: 'note not found' 
+    })
+  }
+
+  if (!body.content) {
+    return response.status(400).json({ 
+      error: 'content missing' 
+    })
+  }
+
+  const note = {
+    content: body.content,
+    important: body.important || false,
+    id: id,
+  }
+
+  notes = notes.map(n => n.id === id ? note : n)
+
+  response.json(note)
+})
+
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
