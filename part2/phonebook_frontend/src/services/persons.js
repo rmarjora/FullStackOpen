@@ -1,7 +1,10 @@
 import axios from 'axios'
-const baseUrl = `${process.env.REACT_APP_API_URL}/api/persons` || "http://localhost:3001/api/persons";
+const baseUrl = process.env.REACT_APP_API_URL 
+  ? `${process.env.REACT_APP_API_URL}/api/persons` 
+  : "http://localhost:3001/api/persons";
 
 const getAll = () => {
+  console.log(`Fetching all persons from ${baseUrl}`)
   const request = axios.get(baseUrl)
   return request.then(response => response.data)
 }
