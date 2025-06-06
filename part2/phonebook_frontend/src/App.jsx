@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import noteService from './services/notes'
+import personService from './services/persons'
 import Notification from './components/Notification'
 
 const Person = ({ person, deleteSelf }) => {
@@ -46,7 +46,7 @@ const App = () => {
       // name already exists, update entry
       console.log(`Person with name ${newPerson.name} already exists, updating number`)
       const id = persons.find(person => person.name === newPerson.name).id
-      noteService.update(id, newPerson)
+      personService.update(id, newPerson)
         .then(response => {
           setPersons(persons.map(person => person.id !== id ? person : response))
           displayNotification(`Changed ${newPerson.name}'s number`)
@@ -56,7 +56,7 @@ const App = () => {
           displayNotification(`Information of ${newPerson.name} has already been removed from the server`, 'red')
         })
     } else {
-      noteService.create(newPerson)
+      personService.create(newPerson)
         .then(response => {
           setPersons(persons.concat(response))
           displayNotification(`Added ${newPerson.name}`)
@@ -69,7 +69,7 @@ const App = () => {
 
   useEffect(() => {
     console.log('effect')
-    noteService.getAll()
+    personService.getAll()
       .then(response => {
         console.log('promise fulfilled')
         setPersons(response)
@@ -95,7 +95,7 @@ const App = () => {
 
     // Delete person if confirmed
     if (result) {
-      noteService.deleteItem(id)
+      personService.deleteItem(id)
       .then(response => {
         console.log('Person deleted:', response)
         setPersons(persons.filter(person => person.id !== id))
