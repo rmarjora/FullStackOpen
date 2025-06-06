@@ -1,12 +1,7 @@
 import axios from 'axios'
-const baseUrl = process.env.REACT_APP_API_URL 
-  ? `${process.env.REACT_APP_API_URL}/api/persons` 
-  : "http://localhost:3001/api/persons";
+const baseUrl = "http://localhost:3001/api/persons"
 
 const getAll = () => {
-  console.log(`Fetching all persons from ${baseUrl}`)
-  console.log(`environment variable REACT_APP_API_URL: ${process.env.REACT_APP_API_URL}`)
-  console.log(`environment variable PORT: ${process.env.PORT}`)
   const request = axios.get(baseUrl)
   return request.then(response => response.data)
 }
