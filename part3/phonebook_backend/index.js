@@ -1,6 +1,8 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
+const Person = require('./models/person')
 
 app.use(express.static('dist'))
 app.use(express.json())
@@ -31,47 +33,77 @@ let phonebook = [
 ]
 
 app.get('/info', (request, response) => {
-    const date = new Date()
-    const info = `<p>Phonebook has info for ${phonebook.length} people</p>
-                  <p>${date}</p>`
-    response.send(info)
+    Person.countDocuments({})
+        .then(count => {
+            const date = new Date()
+            const info = `<p>Phonebook has info for ${count} people</p>
+                          <p>${date}</p>`
+            response.status(200).send(info)
+        })
+        .catch(error => {
+            console.error('Error fetching count:', error)
+            response.status(500).send({ error: 'Failed to fetch count' })
+        })
 })
 
 app.get('/api/persons', (request, response) => {
-    response.json(phonebook)
+    Person.find({})
+        .then(persons => {
+            response.json(persons.map(p => p.toJSON()))
+        })
+        .catch(error => {
+            console.error('Error fetching persons:', error)
+            response.status(500).send({ error: 'Failed to fetch persons' })
+        })
 })
 
 app.get('/api/persons/:id', (request, response) => {
-    const person = phonebook.find(p => p.id === request.params.id)
-    if (person) {
-        response.json(person)
-    } else {
-        response.status(404).send({ error: 'Person not found' })
-    }
+    Person.findById(request.params.id)
+        .then(person => {
+            if (person) {
+                response.json(person.toJSON())
+            } else {
+                response.status(404).send({ error: 'Person not found' })
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching person:', error)
+            response.status(500).send({ error: 'Failed to fetch person' })
+        })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
-    console.log(`Deleting person with id: ${request.params.id}`)
-    phonebook = phonebook.filter(p => p.id !== request.params.id)
-    response.status(204).end()
+    Person.findByIdAndRemove(request.params.id)
+        .then(() => {
+            response.status(204).end()
+        })
+        .catch(error => {
+            console.error('Error deleting person:', error)
+            response.status(500).send({ error: 'Failed to delete person' })
+        })
 })
 
 app.post('/api/persons', (request, response) => {
-    const id = Math.floor(Math.random()*1000000000)
-    console.log(`Adding new person with id: ${id}`)
-    const newPerson = {
-        id: id.toString(),
-        name: request.body.name,
-        number: request.body.number
-    }
-
-    if (!newPerson.name || !newPerson.number) {
+    const name = request.body.name
+    const number = request.body.number
+    if (!name || !number) {
         return response.status(400).json({ error: 'name or number is missing' })
-    } else if (phonebook.some(p => p.name === newPerson.name)) {
+    } else if (Person.findOne({ name })) {
         return response.status(400).json({ error: 'name must be unique' })
     } else {
-        phonebook.push(newPerson)
-        response.status(201).json(newPerson)
+        const person = new Person({
+            name,
+            number
+        })
+
+        person.save()
+            .then(savedPerson => {
+                response.status(201).json(savedPerson.toJSON())
+            })
+            .catch(error => {
+                console.error('Error saving person:', error)
+                response.status(500).send({ error: 'Failed to save person' })
+            })
     }
 })
 
