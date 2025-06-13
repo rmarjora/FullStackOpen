@@ -9,30 +9,19 @@ app.use(express.json())
 morgan.token('body', (req) => JSON.stringify(req.body))
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
-let phonebook = [
-    { 
-      "id": "1",
-      "name": "Arto Hellas", 
-      "number": "040-123456"
-    },
-    { 
-      "id": "2",
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523"
-    },
-    { 
-      "id": "3",
-      "name": "Dan Abramov", 
-      "number": "12-43-234345"
-    },
-    { 
-      "id": "4",
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122"
-    }
-]
+const errorHandler = (error, request, response, next) => {
+    console.error(error.message)
 
-app.get('/info', (request, response) => {
+    if (error.name === 'CastError') {
+        return response.status(400).send({ error: 'malformatted id' })
+    }
+
+    next(error)
+}
+
+app.use(errorHandler)
+
+app.get('/info', (request, response, next) => {
     Person.countDocuments({})
         .then(count => {
             const date = new Date()
@@ -40,24 +29,18 @@ app.get('/info', (request, response) => {
                           <p>${date}</p>`
             response.status(200).send(info)
         })
-        .catch(error => {
-            console.error('Error fetching count:', error)
-            response.status(500).send({ error: 'Failed to fetch count' })
-        })
+        .catch(error => next(error))
 })
 
-app.get('/api/persons', (request, response) => {
+app.get('/api/persons', (request, response, next) => {
     Person.find({})
         .then(persons => {
             response.json(persons.map(p => p.toJSON()))
         })
-        .catch(error => {
-            console.error('Error fetching persons:', error)
-            response.status(500).send({ error: 'Failed to fetch persons' })
-        })
+        .catch(error => next(error))
 })
 
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
     Person.findById(request.params.id)
         .then(person => {
             if (person) {
@@ -66,45 +49,44 @@ app.get('/api/persons/:id', (request, response) => {
                 response.status(404).send({ error: 'Person not found' })
             }
         })
-        .catch(error => {
-            console.error('Error fetching person:', error)
-            response.status(500).send({ error: 'Failed to fetch person' })
-        })
+        .catch(error => next(error))
 })
 
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response, next) => {
     Person.findByIdAndRemove(request.params.id)
         .then(() => {
             response.status(204).end()
         })
-        .catch(error => {
-            console.error('Error deleting person:', error)
-            response.status(500).send({ error: 'Failed to delete person' })
-        })
+        .catch(error => next(error))
 })
 
-app.post('/api/persons', (request, response) => {
-    const name = request.body.name
-    const number = request.body.number
-    if (!name || !number) {
-        return response.status(400).json({ error: 'name or number is missing' })
-    } else if (Person.findOne({ name })) {
-        return response.status(400).json({ error: 'name must be unique' })
-    } else {
-        const person = new Person({
-            name,
-            number
+const createOrUpdatePerson = (person) => {
+    const promise = Person.findOne({name: person.name})
+        .then(existingPerson => {
+            if (existingPerson) {
+                console.log(`Person ${existingPerson.name} exists`)
+                return Person.findByIdAndUpdate(existingPerson._id, person, { new: true, runValidators: true })
+            } else {
+                console.log(person)
+                const newPerson = new Person({
+                    name: person.name,
+                    number: person.number
+                })
+                console.log(`Creating new person ${newPerson.toObject()}`) // "newPerson" has only field "_id" and nothing more???
+                return newPerson.save()
+            }
         })
+        
+    return promise
+}
 
-        person.save()
-            .then(savedPerson => {
-                response.status(201).json(savedPerson.toJSON())
-            })
-            .catch(error => {
-                console.error('Error saving person:', error)
-                response.status(500).send({ error: 'Failed to save person' })
-            })
-    }
+app.post('/api/persons', (request, response, next) => {
+    const person = request.body
+    createOrUpdatePerson(person)
+        .then(savedPerson => {
+            response.status(201).json(savedPerson)
+        })
+        .catch(error => next(error))
 })
 
 const PORT = process.env.PORT || 3001
