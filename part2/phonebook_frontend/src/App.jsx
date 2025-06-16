@@ -11,19 +11,6 @@ const Person = ({ person, deleteSelf }) => {
   )
 }
 
-const Numbers = (props) => {
-  return (
-    <>
-      <h2>Numbers</h2>
-      <ul>
-        {props.persons.map(person =>
-          <Person key={person.name} person={person} />
-        )}
-      </ul>
-    </>
-  )
-}
-
 const App = () => {
   const [filter, setFilter] = useState('')
   const [persons, setPersons] = useState([])
@@ -34,37 +21,24 @@ const App = () => {
   const displayNotification = (message, color = 'green', duration=5000) => {
     setNotification({message, color});
     setTimeout(() => {
-      setNotification({...notification , message: null});
-    }, duration);
+      setNotification({...notification , message: null})
+    }, duration)
   }
 
   const addPerson = (event) => {
     event.preventDefault();
     const newPerson = { name: newName, number: newNumber }
     console.log(`Adding ${newPerson.name} with number ${newPerson.number}`)
-    if (persons.some(person => person.name === newPerson.name)) {
-      // name already exists, update entry
-      console.log(`Person with name ${newPerson.name} already exists, updating number`)
-      const id = persons.find(person => person.name === newPerson.name).id
-      personService.update(id, newPerson)
-        .then(response => {
-          setPersons(persons.map(person => person.id !== id ? person : response))
-          displayNotification(`Changed ${newPerson.name}'s number`)
-        })
-        .catch(error => {
-          console.log('Error updating person:', error)
-          displayNotification(`Information of ${newPerson.name} has already been removed from the server`, 'red')
-        })
-    } else {
-      personService.create(newPerson)
-        .then(response => {
-          setPersons(persons.concat(response))
-          displayNotification(`Added ${newPerson.name}`)
-        })
-        .catch(error => {
-          console.error('Error adding person:', error)
-        })
-    }
+    personService.create(newPerson)
+    .then(response => {
+      displayNotification(`Added ${response.name}`, "green")
+      console.log(`response body is ${response}`)
+      setPersons([...persons, response])
+    })
+    .catch(error => {
+      console.log(error)
+      displayNotification(error.message, "red")
+    })
   }
 
   useEffect(() => {
@@ -74,6 +48,7 @@ const App = () => {
         console.log('promise fulfilled')
         setPersons(response)
       })
+      .catch(error => console.log(error))
   }, [])
 
   const handleFilterChange = (event) => {
@@ -82,7 +57,7 @@ const App = () => {
 
   const handleNameChange = (event) => {
     console.log(event.target.value)
-    setNewName(event.target.value);
+    setNewName(event.target.value)
   }
 
   const handleNumberChange = (event) => {
@@ -128,7 +103,6 @@ const App = () => {
       </ul>
     </div>
   )
-
 }
 
 export default App
