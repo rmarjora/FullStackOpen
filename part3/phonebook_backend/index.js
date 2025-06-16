@@ -10,19 +10,15 @@ morgan.token('body', (req) => JSON.stringify(req.body))
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 const errorHandler = (error, request, response, next) => {
-    console.error(error.message)
-
     if (error.name === 'CastError') {
         return response.status(400).send({ error: 'malformatted id' })
     } else if (error.name === 'ValidationError') {
-        console.log("Validationerror")
+        console.log(error.message)
         return response.status(400).json({error: error.message})
     }
 
     next(error)
 }
-
-app.use(errorHandler)
 
 app.get('/info', (request, response, next) => {
     Person.countDocuments({})
@@ -75,22 +71,39 @@ const createOrUpdatePerson = (person) => {
                     name: person.name,
                     number: person.number
                 })
-                console.log(`Creating new person ${newPerson.toObject()}`) // "newPerson" has only field "_id" and nothing more???
+                console.log(`Creating new person ${newPerson.toObject()}`)
                 return newPerson.save()
             }
         })
-        
     return promise
 }
 
 app.post('/api/persons', (request, response, next) => {
     const person = request.body
-    createOrUpdatePerson(person)
+    Person.findOne({name: person.name})
+        .then(existingPerson => {
+            if (existingPerson) {
+                console.log(`Person ${existingPerson.name} exists`)
+                return Person.findByIdAndUpdate(existingPerson._id, person, { new: true, runValidators: true })
+            } else {
+                console.log(person)
+                const newPerson = new Person({
+                    name: person.name,
+                    number: person.number
+                })
+                console.log(`Creating new person ${newPerson.toObject()}`)
+                return newPerson.save()
+            }
+        })
         .then(savedPerson => {
             response.status(201).json(savedPerson)
         })
-        .catch(error => next(error))
-})
+        .catch(error => {
+            next(error)
+        })
+    })
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {

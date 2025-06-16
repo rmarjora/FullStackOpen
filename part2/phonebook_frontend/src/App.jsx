@@ -32,12 +32,12 @@ const App = () => {
     personService.create(newPerson)
     .then(response => {
       displayNotification(`Added ${response.name}`, "green")
-      console.log(`response body is ${response}`)
       setPersons([...persons, response])
     })
     .catch(error => {
       console.log(error)
-      displayNotification(error.message, "red")
+      const errorMessage = error.response?.data?.error || "An unknown error occurred.";
+      displayNotification(errorMessage, "red")
     })
   }
 
