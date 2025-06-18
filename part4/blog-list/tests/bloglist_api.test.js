@@ -112,6 +112,19 @@ test('Respond with 400 Bad Request when Blog is missing title or url', async () 
     }
 })
 
+test('A blog can be deleted', async () => {
+    const blog = await Blog.findOne({})
+    const idToDelete = blog.id
+    await api.delete(`/api/blogs/${idToDelete}`).expect(204)
+
+    const allBlogs = await Blog.find({})
+    assert.strictEqual(allBlogs.length, initialBlogs.length - 1)
+})
+
+test('The likes of a blog can be updated', async () => {
+    
+})
+
 after(async () => {
     await mongoose.connection.close()
 })
