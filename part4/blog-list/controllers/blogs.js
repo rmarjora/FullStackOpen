@@ -36,8 +36,28 @@ blogsRouter.post('/', async (request, response) => {
 })
 
 blogsRouter.delete('/:id', async (request, response) => {
-    await Blog.findByIdAndDelete(request.params.id)
-    response.status(204).end()
+  const payload = jwt.verify(request.token, process.env.SECRET)
+
+  if (!payload.id) {
+    return response.status(401).json({ error: 'token invalid' })
+  }
+
+  const user = await User.findById(payload.id)
+
+  console.log(`Found user: ${user}`)
+
+  if (!user) {
+    return response.status(401).json({ error: 'user not found' })
+  }
+
+  const blog = await Blog.findById(request.params.id)
+
+  if (blog.user.toString() !== user._id.toString()) {
+    return response.status(403).json({ error: 'you do not have permission to delete this blog' })
+  }
+
+  await Blog.findByIdAndDelete(request.params.id)
+  response.status(204).end()
 })
 
 blogsRouter.put('/:id', async (request, response) => {
