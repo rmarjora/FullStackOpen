@@ -1,8 +1,6 @@
-require('express-async-errors')
-
 const unknownEndpoint = (req, res) => {
-  res.status(404).send({ error: 'unknown endpoint' });
-};
+  res.status(404).send({ error: 'unknown endpoint' })
+}
 
 const errorHandler = (error, req, res, next) => {
   if (error.name === 'ValidationError') {
@@ -19,9 +17,18 @@ const errorHandler = (error, req, res, next) => {
 
   console.error(error.message);
   return res.status(500).json({ error: 'internal server error' });
-};
+}
+
+const tokenExtractor = (request, response, next) => {
+  const authorization = request.get('authorization')
+  if (authorization && authorization.startsWith('Bearer ')) {
+    request.token = authorization.replace('Bearer ', '')
+  }
+  next()
+}
 
 module.exports = {
   unknownEndpoint,
   errorHandler,
-};
+  tokenExtractor
+}
