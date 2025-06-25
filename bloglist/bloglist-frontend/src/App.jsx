@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import Login from './components/Login'
 import Create from './components/Create'
+import Togglable from './components/Togglable'
 import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -45,7 +46,10 @@ const App = () => {
     blogService.setToken(null)
   }
 
+  const blogFormRef = useRef()
+
   const createBlog = async ({ title, author, url }) => {
+    blogFormRef.current.toggleVisibility()
     try {
       const newBlog = await blogService.create({ title, author, url })
       setBlogs(blogs.concat(newBlog))
@@ -57,12 +61,27 @@ const App = () => {
     }
   }
 
+  const likeBlog = async (id) => {
+    const blogToLike = blogs.find(blog => blog.id === id)
+    const updatedBlog = { ...blogToLike, likes: blogToLike.likes + 1, user: blogToLike.user?.id }
+
+    try {
+      const returnedBlog = await blogService.update(id, updatedBlog)
+      setBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog))
+      displayNotification(`You liked ${returnedBlog.title}`, 'success')
+    } catch (error) {
+      console.error('Failed to like the blog:', error)
+      displayNotification('failed to like the blog', 'error')
+    }
+  }
+
   const displayNotification = (message, type, duration = 8000) => {
     setNotification({ message, type })
     setTimeout(() => {
       setNotification({ message: '', type: '' })
     }, duration)
   }
+
   return (
     <>
       <Notification message={notification.message} type={notification.type} />
@@ -72,9 +91,11 @@ const App = () => {
         <div>
           <h2>blogs</h2>
           <p>{user.name} logged in <button onClick={logout}>logout</button></p>
-          <Create onSubmit={createBlog}/>
+          <Togglable buttonLabel="new blog" ref={blogFormRef}>
+            <Create onSubmit={createBlog}/>
+          </Togglable>
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} />
+            <Blog key={blog.id} blog={blog} onLike={() => likeBlog(blog.id)} />
           )}
         </div>
       )}
