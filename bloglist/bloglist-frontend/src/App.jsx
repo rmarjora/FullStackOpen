@@ -98,6 +98,8 @@ const App = () => {
     }, duration)
   }
 
+  blogs.sort((a, b) => b.likes - a.likes)
+
   return (
     <>
       <Notification message={notification.message} type={notification.type} />
