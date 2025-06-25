@@ -13,7 +13,7 @@ const Login = ({ onLogin }) => {
 
     return (
         <div>
-            <h2>Login</h2>
+            <h2>login to application</h2>
             <form onSubmit={handleSubmit}>
                 <div>
                     <label>Username</label>
@@ -33,7 +33,7 @@ const Login = ({ onLogin }) => {
                         required
                     />
                 </div>
-                <button type="submit">Login</button>
+                <button type="submit">login</button>
             </form>
         </div>
     );
