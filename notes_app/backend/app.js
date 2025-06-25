@@ -21,7 +21,7 @@ mongoose
     logger.error('error connection to MongoDB:', error.message)
   })
 
-app.use(express.static('dist'))
+app.use(express.static('../frontend/dist'))
 app.use(express.json())
 app.use(middleware.requestLogger)
 
