@@ -19,7 +19,7 @@ const Blog = ({ blog, onLike, showRemove, onRemove }) => {
         {view && (
           <div>
             <p><a href={blog.url} target="_blank" rel="noreferrer">{blog.url}</a></p>
-            <p>likes {blog.likes} <button onClick={onLike}>like</button></p>
+            <p>likes {blog.likes} <button onClick={onLike} className="likeButton">like</button></p>
             <p>{blog.user?.name}</p>
             {showRemove && (
               <button onClick={onRemove}>remove</button>
