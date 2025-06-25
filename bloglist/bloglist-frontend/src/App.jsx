@@ -14,8 +14,8 @@ const App = () => {
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
+      setBlogs(blogs)
+    )
   }, [])
 
   useEffect(() => {
@@ -75,6 +75,22 @@ const App = () => {
     }
   }
 
+  const removeBlog = async (id) => {
+    const blogToRemove = blogs.find(blog => blog.id === id)
+    if (!window.confirm(`Remove blog ${blogToRemove.title} by ${blogToRemove.author}?`)) {
+      return
+    }
+
+    try {
+      await blogService.deleteBlog(id)
+      setBlogs(blogs.filter(blog => blog.id !== id))
+      displayNotification(`Blog ${blogToRemove.title} removed`, 'success')
+    } catch (error) {
+      console.error('Failed to remove the blog:', error)
+      displayNotification('failed to remove the blog', 'error')
+    }
+  }
+
   const displayNotification = (message, type, duration = 8000) => {
     setNotification({ message, type })
     setTimeout(() => {
@@ -92,10 +108,16 @@ const App = () => {
           <h2>blogs</h2>
           <p>{user.name} logged in <button onClick={logout}>logout</button></p>
           <Togglable buttonLabel="new blog" ref={blogFormRef}>
-            <Create onSubmit={createBlog}/>
+            <Create onSubmit={createBlog} />
           </Togglable>
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} onLike={() => likeBlog(blog.id)} />
+            <Blog
+              key={blog.id}
+              blog={blog}
+              onLike={() => likeBlog(blog.id)}
+              showRemove={blog.user?.username === user.username}
+              onRemove={() => removeBlog(blog.id)}
+            />
           )}
         </div>
       )}

@@ -32,6 +32,7 @@ blogsRouter.post('/', async (request, response) => {
   const savedBlog = await blog.save()
   user.blogs = user.blogs.concat(savedBlog._id)
   await user.save()
+  await savedBlog.populate('user', { username: 1, name: 1 })
   response.status(201).json(savedBlog)
 })
 
@@ -55,6 +56,10 @@ blogsRouter.delete('/:id', async (request, response) => {
   if (blog.user.toString() !== user._id.toString()) {
     return response.status(403).json({ error: 'you do not have permission to delete this blog' })
   }
+
+  // Remove the blog from the user's blogs array
+  user.blogs = user.blogs.filter(blogId => blogId.toString() !== request.params.id)
+  await user.save()
 
   await Blog.findByIdAndDelete(request.params.id)
   response.status(204).end()
