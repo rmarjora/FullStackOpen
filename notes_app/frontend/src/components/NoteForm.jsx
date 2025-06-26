@@ -1,15 +1,15 @@
 import { useState } from 'react'
 
-const NoteForm = ({ createNote }) => {
+const NoteForm = ({ onSubmit }) => {
   const [newNote, setNewNote] = useState('')
 
   const addNote = (event) => {
     event.preventDefault()
-    createNote({
+    const noteObject = {
       content: newNote,
       important: true
-    })
-
+    }
+    onSubmit(noteObject)
     setNewNote('')
   }
 

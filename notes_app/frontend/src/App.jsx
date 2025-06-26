@@ -43,7 +43,7 @@ const App = () => {
       setPassword('')
       console.log('Logged in user:', user)
     } catch (exception) {
-      setErrorMessage('Wrong credentials')
+      setErrorMessage('wrong credentials')
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
@@ -76,6 +76,12 @@ const App = () => {
       .then(initialNotes => {
         setNotes(initialNotes)
       })
+      .catch(error => {
+        setErrorMessage('Failed to fetch notes')
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      })
   }, [])
 
   useEffect(() => {
@@ -87,18 +93,12 @@ const App = () => {
     }
   }, [])
 
-  const addNote = (event) => {
-    event.preventDefault()
-    const noteObject = {
-      content: newNote,
-      important: Math.random() > 0.5
-    }
-
+  const addNote = (noteObject) => {
     noteService
       .create(noteObject)
       .then(returnedNote => {
         setNotes(notes.concat(returnedNote))
-        setNewNote('')
+        noteFormRef.current.toggleVisibility()
       })
   }
 
@@ -145,7 +145,7 @@ const App = () => {
       {user === null ?
       loginForm() :
       <div>
-        <p>{user.name} logged-in</p>
+        <p>{user.name} logged in</p>
         {noteForm()}
       </div>
     }

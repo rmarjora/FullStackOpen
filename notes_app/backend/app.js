@@ -21,13 +21,19 @@ mongoose
     logger.error('error connection to MongoDB:', error.message)
   })
 
-app.use(express.static('../frontend/dist'))
+app.use(express.static('../frontend'))
 app.use(express.json())
 app.use(middleware.requestLogger)
 
 app.use('/api/notes', notesRouter)
 app.use('/api/users', usersRouter)
 app.use('/api/login', loginRouter)
+
+if (process.env.NODE_ENV === 'test') {
+  const testingRouter = require('./controllers/testing')
+  logger.info('Running in test mode, loading testing routes')
+  app.use('/api/testing', testingRouter)
+}
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)

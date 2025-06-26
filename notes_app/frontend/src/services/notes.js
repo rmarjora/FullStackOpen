@@ -14,7 +14,7 @@ const getAll = () => {
     content: 'This note is not saved to server',
     important: true,
   }
-  return request.then(response => response.data.concat(nonExisting))
+  return request.then(response => response.data)
 }
 
 const create = async newObject => {

@@ -34,6 +34,7 @@ notesRouter.post('/', async (request, response) => {
   const user = await User.findById(payload.id)
 
   if(!user) {
+    console.log('User not found')
     return response.status(400).json({ error: 'UserId missing or not valid' })
   }
 
