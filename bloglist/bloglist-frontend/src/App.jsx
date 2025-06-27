@@ -25,7 +25,7 @@ const App = () => {
       setUser(user)
       blogService.setToken(user.token)
     }
-  })
+  }, [])
 
   const onLogin = async (credentials) => {
     try {

@@ -11,23 +11,19 @@ const Blog = ({ blog, onLike, showRemove, onRemove }) => {
 
   const [view, setView] = useState(false)
   return (
-    <>
-      <div style={blogStyle}>
-        {blog.title} {blog.author} <button onClick={() => setView(!view)}>{view ? 'hide' : 'show'}</button>
-      </div>
-      <div>
-        {view && (
-          <div>
-            <p><a href={blog.url} target="_blank" rel="noreferrer">{blog.url}</a></p>
-            <p>likes {blog.likes} <button onClick={onLike} className="likeButton">like</button></p>
-            <p>{blog.user?.name}</p>
-            {showRemove && (
-              <button onClick={onRemove}>remove</button>
-            )}
-          </div>
-        )}
-      </div>
-    </>
+    <div style={blogStyle} className='blog'>
+      {blog.title} {blog.author} <button onClick={() => setView(!view)}>{view ? 'hide' : 'show'}</button>
+      {view && (
+        <div>
+          <p><a href={blog.url} target="_blank" rel="noreferrer">{blog.url}</a></p>
+          <p>likes <span data-testid="blogLikes">{blog.likes}</span> <button onClick={onLike} className="likeButton">like</button></p>
+          <p>{blog.user?.name}</p>
+          {showRemove && (
+            <button onClick={onRemove}>remove</button>
+          )}
+        </div>
+      )}
+    </div>
   )
 }
 
