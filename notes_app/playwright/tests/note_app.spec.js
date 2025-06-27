@@ -53,7 +53,7 @@ describe('Note app', () => {
         await createNote(page, 'second note')
       })
 
-      test.only('one of those can be made nonimportant', async ({ page }) => {
+      test('importance can be changed', async ({ page }) => {
         let note = page.locator('.note', { hasText: 'first note' })
         let toggleButton = note.getByRole('button')
 

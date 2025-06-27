@@ -10,7 +10,7 @@ import loginService from './services/login'
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
-  const [notification, setNotification] = useState({ message: '', type: '' })
+  const [notification, setNotification] = useState({ message: '', type: 'error' })
 
   useEffect(() => {
     blogService.getAll().then(blogs =>

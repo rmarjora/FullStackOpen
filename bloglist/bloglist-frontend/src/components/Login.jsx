@@ -19,6 +19,7 @@ const Login = ({ onLogin }) => {
           <label>Username</label>
           <input
             type="text"
+            data-testid="username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
@@ -28,6 +29,7 @@ const Login = ({ onLogin }) => {
           <label>Password</label>
           <input
             type="password"
+            data-testid="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
