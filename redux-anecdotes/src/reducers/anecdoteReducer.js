@@ -20,13 +20,11 @@ const asObject = (anecdote) => {
 const initialState = anecdotesAtStart.map(asObject)
 
 const reducer = (state = initialState, action) => {
-  console.log('state now: ', state)
-  console.log('action', action)
 
-  const sortByVotes = anecdotes => 
+  const sortByVotes = anecdotes =>
     anecdotes.slice().sort((a, b) => b.votes - a.votes)
 
-  switch(action.type) {
+  switch (action.type) {
     case 'VOTE': {
       const id = action.payload.id
       const anecdoteToVote = state.find(a => a.id === id)
@@ -46,25 +44,25 @@ const reducer = (state = initialState, action) => {
 }
 
 const vote = (id) => {
-    console.log('vote', id)
-    return {
-      type: 'VOTE',
-      payload: { id }
-    }
+  console.log('vote', id)
+  return {
+    type: 'VOTE',
+    payload: { id }
+  }
+}
+
+const createAnecdote = (content) => {
+  const anecdote = {
+    content: content,
+    id: (100000 * Math.random()).toFixed(0),
+    votes: 0
   }
 
-  const createAnecdote = (content) => {
-    const anecdote = {
-      content: content,
-      id: (100000 * Math.random()).toFixed(0),
-      votes: 0
-    }
-
-    return {
-      type: 'ADD_ANECDOTE',
-      payload: anecdote
-    }
+  return {
+    type: 'ADD_ANECDOTE',
+    payload: anecdote
   }
+}
 
 export default reducer
 

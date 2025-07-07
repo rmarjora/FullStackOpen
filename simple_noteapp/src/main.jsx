@@ -1,42 +1,27 @@
-const noteReducer = (state = [], action) => {
-  if (action.type === 'NEW_NOTE') {
-    return state.concat(action.payload)
-  }
+import ReactDOM from 'react-dom/client'
+import { createStore, combineReducers } from 'redux'
+import { Provider } from 'react-redux'
+import App from './App'
+import noteReducer from './reducers/noteReducer'
+import filterReducer from './reducers/filterReducer'
+import { createNote } from './reducers/noteReducer'
+import { filterChange } from './reducers/filterReducer'
 
-  return state
-}
-
-const store = createStore(noteReducer)
-
-store.dispatch({
-  type: 'NEW_NOTE',
-  payload: {
-    content: 'the app state is in redux store',
-    important: true,
-    id: 1
-  }
+const reducer = combineReducers({
+  notes: noteReducer,
+  filter: filterReducer
 })
 
-store.dispatch({
-  type: 'NEW_NOTE',
-  payload: {
-    content: 'state changes are made with actions',
-    important: false,
-    id: 2
-  }
-})
+const store = createStore(reducer)
 
-const App = () => {
-  return(
-    <div>
-      <ul>
-        {store.getState().map(note=>
-          <li key={note.id}>
-            {note.content} <strong>{note.important ? 'important' : ''}</strong>
-          </li>
-        )}
-        </ul>
-    </div>
-  )
-}
-export default noteReducer;
+store.subscribe(() => console.log(store.getState()))
+store.dispatch(filterChange('IMPORTANT'))
+store.dispatch(createNote('combineReducers forms one reducer from many simple reducers'))
+
+console.log('initial state:', store.getState())
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <Provider store={store}>
+    <App />
+  </Provider>
+)
