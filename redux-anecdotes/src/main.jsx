@@ -5,14 +5,7 @@ import App from './App'
 import anecdoteReducer from './reducers/anecdoteReducer'
 import filterReducer from './reducers/filterReducer'
 import notificationReducer from './reducers/notificationReducer'
-
-const store = configureStore({
-  reducer: {
-    anecdotes: anecdoteReducer,
-    filter: filterReducer,
-    notification: notificationReducer
-  }
-})
+import store from './store'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <Provider store={store}>
