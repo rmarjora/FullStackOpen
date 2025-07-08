@@ -1,0 +1,119 @@
+{
+  "anecdotes": [
+    {
+      "content": "If it hurts, do it more often",
+      "id": "47145",
+      "votes": 0
+    },
+    {
+      "content": "Adding manpower to a late software project makes it later!",
+      "id": "21149",
+      "votes": 0
+    },
+    {
+      "content": "The first 90 percent of the code accounts for the first 10 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.",
+      "id": "69581",
+      "votes": 0
+    },
+    {
+      "content": "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.",
+      "id": "36975",
+      "votes": 0
+    },
+    {
+      "content": "Premature optimization is the root of all evil.",
+      "id": "25170",
+      "votes": 0
+    },
+    {
+      "content": "Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.",
+      "id": "98312",
+      "votes": 0
+    },
+    {
+      "content": "Programming without an overall plan is the same as building a house without a blueprint.",
+      "id": "12345",
+      "votes": 0
+    },
+    {
+      "content": "The only way to go fast, is to go well.",
+      "id": "67890",
+      "votes": 0
+    },
+    {
+      "content": "Simplicity is the soul of efficiency.",
+      "id": "54321",
+      "votes": 0
+    },
+    {
+      "content": "Code is like humor. When you have to explain it, it’s bad.",
+      "id": "98765",
+      "votes": 0
+    },
+    {
+      "content": "In order to be irreplaceable, one must always be different.",
+      "id": "13579",
+      "votes": 0
+    },
+    {
+      "content": "There are only two hard things in computer science: cache invalidation and naming things.",
+      "id": "24680",
+      "votes": 0
+    },
+    {
+      "content": "The best way to predict the future is to invent it.",
+      "id": "11223",
+      "votes": 0
+    },
+    {
+      "content": "Software is a great combination between artistry and engineering.",
+      "id": "33445",
+      "votes": 0
+    },
+    {
+      "content": "Talk is cheap. Show me the code.",
+      "id": "55667",
+      "votes": 0
+    },
+    {
+      "content": "A language that doesn’t affect the way you think about programming is not worth knowing.",
+      "id": "77889",
+      "votes": 0
+    },
+    {
+      "content": "The best code is no code at all.",
+      "id": "99001",
+      "votes": 0
+    },
+    {
+      "content": "Good code is its own best documentation.",
+      "id": "22334",
+      "votes": 0
+    },
+    {
+      "content": "Software development is a marathon, not a sprint.",
+      "id": "44556",
+      "votes": 0
+    },
+    {
+      "content": "You can’t write good code without good tests.",
+      "id": "66778",
+      "votes": 0
+    },
+    {
+      "content": "The best way to learn programming is by doing it.",
+      "id": "88990",
+      "votes": 0
+    },
+    {
+      "content": "Every program is a part of some other program’s source code.",
+      "id": "10112",
+      "votes": 0
+    },
+    {
+      "content": "A good programmer is someone who always looks both ways before crossing a one-way street.",
+      "id": "13141",
+      "votes": 0
+    }
+  ]
+}
